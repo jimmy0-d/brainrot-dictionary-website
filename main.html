@@ -1,96 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="el">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Image Gallery</title>
+  <meta charset="UTF-8">
+  <title>Brainrot Gallery & Lore</title>
+  <style>
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+      gap: 10px;
+    }
+    .item img {
+      width: 100%; cursor: pointer;
+    }
+    .modal {
+      position: fixed; top: 0; left: 0; width:100%; height:100%;
+      background: rgba(0,0,0,0.8); display:flex;
+      justify-content:center; align-items:center;
+    }
+    .modal-content {
+      background:#fff; padding:20px; max-width:600px;
+      max-height:80vh; overflow:auto;
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Heading Name -->
-    <div class="heading">
-        <h1>Image Gallery</h1>
-    </div>
 
-    <!-- Image Gallery section all images in one div -->
-    <div class="gallery">
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240311163321/Types-of-Wastes-(Banner).webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240311163321/Types-of-Wastes-(Banner).webp')"
-                alt="Image 1">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240311125007/Invertebrates-(Banner).webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240311125007/Invertebrates-(Banner).webp')"
-                alt="Image 2">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240311120816/GBlog-banner.webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240311120816/GBlog-banner.webp')"
-                alt="Image 3">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240308123700/Layers-of-Atmosphere-Banner-02.webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240308123700/Layers-of-Atmosphere-Banner-02.webp')"
-                alt="Image 4">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240307180031/List-of-Rocket-Launching-Stations-in-India---banner.webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240307180031/List-of-Rocket-Launching-Stations-in-India---banner.webp')"
-                alt="Image 5">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240215134226/Russia-Banner-copy-2.webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240215134226/Russia-Banner-copy-2.webp')"
-                alt="Image 6">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240226155245/girl-dog-names-banner.webp"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240226155245/girl-dog-names-banner.webp')"
-                alt="Image 7">
-        </div>
-        <div class="gallery-item">
-            <img src=
-"https://media.geeksforgeeks.org/wp-content/uploads/20240215151423/Types-of-Microscope-(Banner).png"
-                onclick="openModal(
-'https://media.geeksforgeeks.org/wp-content/uploads/20240215151423/Types-of-Microscope-(Banner).png')"
-                alt="Image 8">
-        </div>
-    </div>
+<div class="gallery" id="gallery">
+  <div class="item" data-title="Shark">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Tralalero_Tralala.webp/225px-Tralalero_Tralala.webp.png" alt="Shark">
+    <p>Shark Meme</p>
+  </div>
+  <div class="item" data-title="Crocodile">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bombardiro_Crocodillo.jpg/500px-Bombardiro_Crocodillo.jpg" alt="Crocodile">
+    <p>Croc Meme</p>
+  </div>
 
-    <!-- Modal for Image Display -->
-    <div id="myModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <img class="modal-content" id="modalImage">
-    </div>
+</div>
 
-    <!-- JavaScript for Modal -->
-    <script>
-        function openModal(src) {
-            document.getElementById("modalImage").src = src;
-            document.getElementById("myModal").style.display = "block";
-        }
+<div id="modal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <button onclick="closeModal()">Κλείσιμο</button>
+    <h2 id="modal-title"></h2>
+    <img id="modal-img" style="max-width:100%;">
+    <p id="modal-lore">Φόρτωση lore...</p>
+    <a id="modal-link" href="#" target="_blank">Διαβάστε περισσότερα</a>
+  </div>
+</div>
 
-        function closeModal() {
-            document.getElementById("myModal").style.display = "none";
-        }
-    </script>
+<script>
+const gallery = document.getElementById('gallery');
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modal-title');
+const modalImg = document.getElementById('modal-img');
+const modalLore = document.getElementById('modal-lore');
+const modalLink = document.getElementById('modal-link');
+
+const loreCache = {};
+
+gallery.addEventListener('click', async e => {
+  const item = e.target.closest('.item');
+  if (!item) return;
+
+  const title = item.dataset.title;
+  const imgSrc = item.querySelector('img').src;
+
+  modalTitle.textContent = title;
+  modalImg.src = imgSrc;
+  modalLore.textContent = 'Φόρτωση lore...';
+
+  if (loreCache[title]) {
+    showLore(loreCache[title]);
+  } else {
+    const url = 'https://en.wikipedia.org/w/api.php?' +
+      new URLSearchParams({
+        origin: '*',
+        action: 'query',
+        prop: 'extracts',
+        exintro: '',
+        explaintext: '',
+        titles: title,
+        format: 'json'
+      });
+
+    try {
+      const resp = await fetch(url);
+      const data = await resp.json();
+      const pages = data.query.pages;
+      const page = pages[Object.keys(pages)[0]];
+      const extract = page.extract;
+      const pageUrl = 'https://en.wikipedia.org/wiki/' + page.title.replace(/ /g,'_');
+
+      loreCache[title] = { extract, pageUrl };
+      showLore(loreCache[title]);
+    } catch (err) {
+      modalLore.textContent = 'Σφάλμα φόρτωσης lore.';
+    }
+  }
+
+  modal.style.display = 'flex';
+});
+
+function showLore({ extract, pageUrl }) {
+  modalLore.textContent = extract;
+  modalLink.href = pageUrl;
+  modalLink.textContent = 'Διαβάστε περισσότερα στο Wikipedia';
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+</script>
+
 </body>
-
 </html>
